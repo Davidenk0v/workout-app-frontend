@@ -11,7 +11,6 @@ export const ProfileData = () => {
       const response = await getMe(tokens.token);
       if (response.ok) {
         const user = await response.json();
-        console.log("User data: ", user);
         setUser(user);
       }
     } catch (error) {

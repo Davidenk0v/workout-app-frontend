@@ -20,6 +20,17 @@ export const isValidToken = (token: string): boolean => {
   }
 };
 
+export const getUserId = (token: string): number => {
+  if (!token) return -1;
+  try {
+    const decoded: DecodedToken = jwtDecode(token);
+    return decoded.userId;
+  } catch (error) {
+    console.error(error);
+    return -1;
+  }
+};
+
 export const isAdmin = (token: string): boolean => {
   if (!token) return false;
   try {

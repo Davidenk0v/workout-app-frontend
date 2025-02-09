@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../auth/AuthProvider";
 import { Login } from "../utils/types";
 import { login } from "../services/authService";
-import { jwtDecode } from "jwt-decode";
 
 export const LoginForm: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -20,8 +19,6 @@ export const LoginForm: React.FC = () => {
       const response = await login(data);
       localStorage.setItem("token", JSON.stringify(response.data));
       authContext?.setIsLoggedIn(true);
-      const decoded = jwtDecode(response.data.token);
-      console.log(decoded);
       navigate("/profile");
     } catch (error) {
       console.log(error, "error al iniciar sesión");
@@ -29,7 +26,6 @@ export const LoginForm: React.FC = () => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.id);
     if (e.target.id === "email") setEmail(e.target.value);
     if (e.target.id === "password") setPassword(e.target.value);
   };

@@ -8,9 +8,12 @@ export const Table: React.FC = () => {
 
   const getUserList = async () => {
     try {
-      const response = await getUsers();
-      const userList = response.data;
-      setUsers(userList);
+      const token = JSON.parse(localStorage.getItem("token") || "{}");
+      const response = await getUsers(token.token);
+      if (response.ok) {
+        const userList = await response.json();
+        setUsers(userList);
+      }
     } catch (e) {
       console.error("Error al cargar los usuarios", e);
     }
