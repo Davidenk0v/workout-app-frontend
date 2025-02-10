@@ -21,6 +21,14 @@ export interface Workout {
   user: number;
 }
 
+export interface NewWorkout {
+  name: string;
+  description: string;
+  result: string;
+  date: Date;
+  user: number;
+}
+
 export interface User {
   idUser: number;
   firstName: string;

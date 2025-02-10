@@ -25,8 +25,8 @@ export const RegisterForm: React.FC = () => {
     try {
       const response = await register(formData);
       console.log(response.data);
-      // localStorage.setItem("token", response.data.token);
-      // authContext?.setIsLoggedIn(true);
+      localStorage.setItem("token", response.data.token);
+      authContext?.setIsLoggedIn(true);
       navigate("/");
     } catch (e) {
       console.error(e);

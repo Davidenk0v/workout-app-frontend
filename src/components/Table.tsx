@@ -1,10 +1,23 @@
 import { useEffect, useState } from "react";
 import { HEADERS } from "../utils/consts";
 import { User, UserList } from "../utils/types";
-import { getUsers } from "../services/userService";
+import { deleteById, getUsers } from "../services/userService";
 
 export const Table: React.FC = () => {
   const [users, setUsers] = useState<UserList>([]);
+
+  const deleteUser = async (id: number) => {
+    try {
+      const response = await deleteById(id);
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        getUserList();
+      }
+    } catch (e) {
+      console.error("Error al eliminar el usuario", e);
+    }
+  };
 
   const getUserList = async () => {
     try {
@@ -50,6 +63,14 @@ export const Table: React.FC = () => {
             <td className="px-6 py-4">{user.lastName}</td>
             <td className="px-6 py-4">{user.username}</td>
             <td className="px-6 py-4">{user.email}</td>
+            <td className="px-6 py-4">
+              <button
+                onClick={() => deleteUser(user.idUser)}
+                className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 cursor-pointer"
+              >
+                Eliminar
+              </button>
+            </td>
           </tr>
         ))}
       </tbody>

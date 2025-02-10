@@ -19,6 +19,7 @@ export const LoginForm: React.FC = () => {
       const response = await login(data);
       localStorage.setItem("token", JSON.stringify(response.data));
       authContext?.setIsLoggedIn(true);
+      console.log(response.data);
       navigate("/profile");
     } catch (error) {
       console.log(error, "error al iniciar sesión");

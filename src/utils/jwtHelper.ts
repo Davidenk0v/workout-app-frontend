@@ -20,7 +20,8 @@ export const isValidToken = (token: string): boolean => {
   }
 };
 
-export const getUserId = (token: string): number => {
+export const getUserId = (): number => {
+  const token = JSON.parse(localStorage.getItem("token") || "{}").token;
   if (!token) return -1;
   try {
     const decoded: DecodedToken = jwtDecode(token);
@@ -31,7 +32,8 @@ export const getUserId = (token: string): number => {
   }
 };
 
-export const isAdmin = (token: string): boolean => {
+export const isAdmin = (): boolean => {
+  const token = JSON.parse(localStorage.getItem("token") || "{}").token;
   if (!token) return false;
   try {
     const decoded: DecodedToken = jwtDecode(token);

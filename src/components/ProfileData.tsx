@@ -1,20 +1,48 @@
 import { useEffect, useState } from "react";
 import { User } from "../utils/types";
-import { getMe } from "../services/userService";
+import { deleteById, getMe } from "../services/userService";
+import { getUserWorkouts } from "../services/workoutService";
 
 export const ProfileData = () => {
   const [user, setUser] = useState<User>();
+  const [workouts, setWorkouts] = useState<number>();
 
   const getUserData = async () => {
     try {
       const tokens = JSON.parse(localStorage.getItem("token") || "{}");
       const response = await getMe(tokens.token);
       if (response.ok) {
-        const user = await response.json();
-        setUser(user);
+        const data = await response.json();
+        setUser(data);
+        console.log(user);
+        getNumberOfWorkouts();
       }
     } catch (error) {
       console.error("Error fetching user data: ", error);
+    }
+  };
+
+  const deleteUser = async (id: number) => {
+    try {
+      const response = await deleteById(id);
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        window.location.href = "/";
+      }
+    } catch (e) {
+      console.error("Error al eliminar el usuario", e);
+    }
+  };
+
+  const getNumberOfWorkouts = async () => {
+    if (user === undefined) return;
+    const response = await getUserWorkouts(user.idUser);
+    console.log("Response: ", response);
+    if (response.ok) {
+      const workoutsList = await response.json();
+      console.log("Workouts: ", workoutsList);
+      setWorkouts(workoutsList.length);
     }
   };
 
@@ -51,7 +79,7 @@ export const ProfileData = () => {
                   <div className="flex justify-center py-4 lg:pt-4 pt-8">
                     <div className="mr-4 p-3 text-center">
                       <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-600">
-                        22
+                        {workouts}
                       </span>
                       <span className="text-sm text-blueGray-400">
                         Entrenos
@@ -75,9 +103,12 @@ export const ProfileData = () => {
               <div className="mt-10 py-10 border-t border-blueGray-200 text-center">
                 <div className="flex flex-wrap justify-center">
                   <div className="w-full lg:w-9/12 px-4">
-                    <a href="#pablo" className="font-normal text-pink-500">
-                      Eliminar cuenta
-                    </a>
+                    <button
+                      onClick={() => deleteUser(user?.idUser || 0)}
+                      className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 cursor-pointer"
+                    >
+                      Eliminar
+                    </button>
                   </div>
                 </div>
               </div>
