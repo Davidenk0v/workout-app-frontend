@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { NewWorkout, Workout } from "../utils/types";
 import { WorkoutCard } from "./WorkoutCard";
 import {
@@ -8,7 +8,6 @@ import {
 } from "../services/workoutService";
 import { getUserId } from "../utils/jwtHelper";
 import { ErrorMessage } from "./ErrorMessage";
-import { NewWorkoutForm } from "./NewWorkoutForm";
 import { NewButton } from "./NewButton";
 import Swal from "sweetalert2";
 

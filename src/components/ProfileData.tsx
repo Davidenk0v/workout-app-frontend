@@ -2,11 +2,14 @@ import { useEffect, useState } from "react";
 import { User } from "../utils/types";
 import { deleteById, getMe } from "../services/userService";
 import { getUserWorkouts } from "../services/workoutService";
+import Swal from "sweetalert2";
+import { useAuth } from "../auth/AuthProvider";
+import { refresh } from "../services/authService";
 
 export const ProfileData = () => {
   const [user, setUser] = useState<User | null>(null);
   const [workouts, setWorkouts] = useState<number | null>(null);
-
+  const auth = useAuth();
   // Función para obtener datos del usuario
   const getUserData = async () => {
     try {
@@ -19,6 +22,11 @@ export const ProfileData = () => {
     } catch (error) {
       console.error("Error fetching user data: ", error);
     }
+  };
+
+  const test = async () => {
+    const res = await refresh();
+    console.log(res);
   };
 
   // Función para obtener el número de entrenos
@@ -37,6 +45,7 @@ export const ProfileData = () => {
 
   // Obtener datos del usuario al montar el componente
   useEffect(() => {
+    test();
     getUserData();
   }, []);
 
@@ -46,6 +55,33 @@ export const ProfileData = () => {
       getNumberOfWorkouts();
     }
   }, [user]);
+
+  const deleteProfile = async (id: number) => {
+    try {
+      const response = await deleteById(id);
+      console.log(response.json());
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const alertDelete = (id: number) => {
+    Swal.fire({
+      title: "¿Estás seguro de eliminar tu cuenta?",
+      text: "Se cerrará sesión y se eliminará tu cuenta para siempre",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        auth?.logout();
+        deleteProfile(id);
+      }
+    });
+  };
 
   return (
     <main className="profile-page">
@@ -63,7 +99,7 @@ export const ProfileData = () => {
                   <div className="flex justify-center py-4 lg:pt-4 pt-8">
                     <div className="mr-4 p-3 text-center">
                       <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-600">
-                        {workouts ?? "Cargando..."}
+                        {workouts ?? "0"}
                       </span>
                       <span className="text-sm text-blueGray-400">
                         Entrenos
@@ -87,7 +123,7 @@ export const ProfileData = () => {
                 <div className="flex flex-wrap justify-center">
                   <div className="w-full lg:w-9/12 px-4">
                     <button
-                      onClick={() => user && deleteById(user.idUser)}
+                      onClick={() => user && alertDelete(user.idUser)}
                       className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 cursor-pointer"
                     >
                       Eliminar

@@ -12,7 +12,6 @@ export const login = async (login: Login) => {
 
 export const refreshToken = async () => {
   const tokens = JSON.parse(localStorage?.getItem("token") || "{}");
-  console.log(tokens);
   return axios
     .post(`${API_URL}/auth/refresh`, {
       refreshToken: tokens.refreshToken,
@@ -24,6 +23,16 @@ export const refreshToken = async () => {
       }
       return response.data;
     });
+};
+
+export const refresh = async () => {
+  const tokens = JSON.parse(localStorage.getItem("token") || "{}");
+  const response = fetch(`/auth/refresh`, {
+    method: "POST",
+    body: JSON.stringify(tokens.refreshToken),
+  });
+  const data = (await response).json();
+  console.log(data);
 };
 
 export const logout = (): void => {

@@ -5,7 +5,7 @@ import { RegisterForm } from "../components/RegisterForm";
 export const Register = () => {
   const auth = useAuth();
   if (auth?.isLoggedIn) {
-    return <Navigate to="/users" />;
+    return <Navigate to="/profile" />;
   }
   return (
     <div className="container mx-auto p-5 w-screen h-screen">

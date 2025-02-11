@@ -8,7 +8,7 @@ export const Users: React.FC = () => {
           Usuarios
         </span>
       </h1>
-      <div className="relative overflow-x-auto">
+      <div className="relative overflow-x-auto h-screen ">
         <Table />
       </div>
     </>
