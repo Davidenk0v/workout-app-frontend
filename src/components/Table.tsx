@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { HEADERS } from "../utils/consts";
 import { User, UserList } from "../utils/types";
 import { deleteById, getUsers } from "../services/userService";
+import Swal from "sweetalert2";
 
 export const Table: React.FC = () => {
   const [users, setUsers] = useState<UserList>([]);
@@ -30,6 +31,23 @@ export const Table: React.FC = () => {
     } catch (e) {
       console.error("Error al cargar los usuarios", e);
     }
+  };
+
+  const alertDelete = (id: number) => {
+    Swal.fire({
+      title: "¿Estás seguro de eliminar el usuario?",
+      text: "No podrás revertir esta acción",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteUser(id);
+      }
+    });
   };
 
   useEffect(() => {
@@ -65,7 +83,7 @@ export const Table: React.FC = () => {
             <td className="px-6 py-4">{user.email}</td>
             <td className="px-6 py-4">
               <button
-                onClick={() => deleteUser(user.idUser)}
+                onClick={() => alertDelete(user.idUser)}
                 className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 cursor-pointer"
               >
                 Eliminar

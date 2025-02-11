@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { NewWorkout, Workout } from "../utils/types";
 import { WorkoutCard } from "./WorkoutCard";
 import {
@@ -10,19 +10,45 @@ import { getUserId } from "../utils/jwtHelper";
 import { ErrorMessage } from "./ErrorMessage";
 import { NewWorkoutForm } from "./NewWorkoutForm";
 import { NewButton } from "./NewButton";
+import Swal from "sweetalert2";
 
 export const Workouts: React.FC = () => {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  // Función para abrir el modal
-  const openModal = (): void => {
-    setIsModalOpen(true);
-  };
-
-  // Función para cerrar el modal
-  const closeModal = (): void => {
-    setIsModalOpen(false);
+  const newWorkoutModel = (): void => {
+    Swal.fire({
+      title: "Nuevo Entrenamiento",
+      html: `<input id="swal-input1" class="swal2-input" placeholder="Nombre" required>
+      <input id="swal-input2" class="swal2-input" placeholder="Descripción" required>
+      <input id="swal-input4" class="swal2-input" placeholder="Resultado" required>`,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: "Guardar",
+      cancelButtonColor: "#d33",
+      confirmButtonColor: "#3085d6",
+      preConfirm: () => {
+        const name = (
+          document.getElementById("swal-input1") as HTMLInputElement
+        ).value;
+        const description = (
+          document.getElementById("swal-input2") as HTMLInputElement
+        ).value;
+        const result = (
+          document.getElementById("swal-input4") as HTMLInputElement
+        ).value;
+        return {
+          name: name,
+          description: description,
+          date: new Date(),
+          result: result,
+          user: getUserId(),
+        };
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        newWorkout(result.value);
+      }
+    });
   };
 
   const getWorkouts = async () => {
@@ -36,6 +62,23 @@ export const Workouts: React.FC = () => {
     } catch (error) {
       console.error("Error fetching workouts: ", error);
     }
+  };
+
+  const alertDelete = (id: number) => {
+    Swal.fire({
+      title: "¿Estás seguro de eliminar el entrenamiento?",
+      text: "No podrás revertir esta acción",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        onDelete(id);
+      }
+    });
   };
 
   const newWorkout = async (workout: NewWorkout) => {
@@ -66,14 +109,14 @@ export const Workouts: React.FC = () => {
 
   return (
     <div>
-      <NewButton openModal={openModal} />
+      <NewButton openModal={newWorkoutModel} />
       {workouts.length > 0 ? (
         <div className="grid grid-cols-1 gap-4 px-4 py-8 md:grid-cols-2 lg:grid-cols-3">
           {workouts.map((workout) => (
             <WorkoutCard
               key={workout.idWorkout}
               workout={workout}
-              onDelete={onDelete}
+              onDelete={alertDelete}
             />
           ))}
         </div>
@@ -81,9 +124,6 @@ export const Workouts: React.FC = () => {
         <div className="w-full h-full flex justify-center items-center">
           <ErrorMessage message="No workouts found" />
         </div>
-      )}
-      {isModalOpen && (
-        <NewWorkoutForm closeModal={closeModal} onCreate={newWorkout} />
       )}
     </div>
   );

@@ -1,8 +1,7 @@
-import { FormEvent, useContext, useState } from "react";
+import { FormEvent, useState } from "react";
 import { register } from "../services/authService";
 import { Register } from "../utils/types";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../auth/AuthProvider";
 
 export const RegisterForm: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -10,7 +9,6 @@ export const RegisterForm: React.FC = () => {
   const [firstName, setfirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [username, setUserName] = useState<string>("");
-  const authContext = useContext(AuthContext);
   const navigate = useNavigate();
 
   const onRegister = async (event: FormEvent) => {
@@ -25,8 +23,8 @@ export const RegisterForm: React.FC = () => {
     try {
       const response = await register(formData);
       console.log(response.data);
-      localStorage.setItem("token", response.data.token);
-      authContext?.setIsLoggedIn(true);
+      // localStorage.setItem("token", response.data.token);
+      // authContext?.setIsLoggedIn(true);
       navigate("/");
     } catch (e) {
       console.error(e);
