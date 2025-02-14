@@ -9,8 +9,19 @@ export const LoginForm: React.FC = () => {
   const [password, setPassword] = useState<string>("");
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
   const onSubmitLogin = async (e: FormEvent) => {
+    const validateEmail = (value: string) => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(value);
+    };
+
     e.preventDefault();
+    if (!validateEmail(email)) {
+      setErrorMessage("Email is not valid");
+      return;
+    }
     const data: Login = {
       email,
       password,
@@ -45,10 +56,17 @@ export const LoginForm: React.FC = () => {
           type="email"
           id="email"
           value={email}
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          placeholder="Introduce your email"
+          className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ${
+            errorMessage ? "border-red-500" : "border-gray-300"
+          }`}
+          placeholder="Introduce tu correo electrónico"
           required
         />
+        {errorMessage && (
+          <span className="text-red-500 text-xs font-medium">
+            {errorMessage}
+          </span>
+        )}
       </div>
       <div className="mb-5">
         <label
