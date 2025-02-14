@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import { User } from "../utils/types";
-import { deleteById, getMe } from "../services/userService";
+import { deleteById, getMe, updateUser } from "../services/userService";
 import { getUserWorkouts } from "../services/workoutService";
 import Swal from "sweetalert2";
 import { useAuth } from "../auth/AuthProvider";
-import { refresh } from "../services/authService";
+import { SuccessMessage } from "./SuccessMesage";
 
 export const ProfileData = () => {
   const [user, setUser] = useState<User | null>(null);
   const [workouts, setWorkouts] = useState<number | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedUser, setEditedUser] = useState<User | null>(null);
+  const [successfullyMessage, setSuccessfullyMessage] = useState<string>("");
   const auth = useAuth();
   // Función para obtener datos del usuario
   const getUserData = async () => {
@@ -18,15 +21,11 @@ export const ProfileData = () => {
       if (response.ok) {
         const data = await response.json();
         setUser(data);
+        setEditedUser(data);
       }
     } catch (error) {
       console.error("Error fetching user data: ", error);
     }
-  };
-
-  const test = async () => {
-    const res = await refresh();
-    console.log(res);
   };
 
   // Función para obtener el número de entrenos
@@ -45,7 +44,6 @@ export const ProfileData = () => {
 
   // Obtener datos del usuario al montar el componente
   useEffect(() => {
-    test();
     getUserData();
   }, []);
 
@@ -65,6 +63,10 @@ export const ProfileData = () => {
     }
   };
 
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+
   const alertDelete = (id: number) => {
     Swal.fire({
       title: "¿Estás seguro de eliminar tu cuenta?",
@@ -82,12 +84,32 @@ export const ProfileData = () => {
       }
     });
   };
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!editedUser) return;
+    setEditedUser({ ...editedUser, [e.target.name]: e.target.value });
+  };
+
+  const handleSave = async () => {
+    if (!editedUser) return;
+    try {
+      await updateUser(editedUser.idUser, editedUser);
+      setUser(editedUser);
+      setIsEditing(false);
+      setSuccessfullyMessage("Cambios guardados correctamente");
+      setTimeout(() => setSuccessfullyMessage(""), 3000);
+    } catch (error) {
+      console.error("Error updating user:", error);
+    }
+  };
 
   return (
     <main className="profile-page">
       <section className="relative block h-500-px">
         <div className="absolute top-0 w-full h-full bg-center bg-cover">
           <span className="w-full h-full absolute opacity-50 bg-black"></span>
+          {successfullyMessage && (
+            <SuccessMessage message={successfullyMessage} />
+          )}
         </div>
       </section>
       <section className="relative py-16 bg-blueGray-200">
@@ -109,27 +131,63 @@ export const ProfileData = () => {
                 </div>
               </div>
               <div className="text-center mt-12">
-                <h3 className="text-4xl font-semibold leading-normal text-blueGray-700 mb-2">
-                  {user?.username ?? "Cargando..."}
-                </h3>
-                <div className="text-sm leading-normal mt-0 mb-2 text-blueGray-400 font-bold uppercase">
-                  {user ? `${user.firstName} ${user.lastName}` : "Cargando..."}
-                </div>
-                <div className="mb-2 text-blueGray-600 mt-10">
-                  {user?.email ?? "Cargando..."}
-                </div>
-              </div>
-              <div className="mt-10 py-10 border-t border-blueGray-200 text-center">
-                <div className="flex flex-wrap justify-center">
-                  <div className="w-full lg:w-9/12 px-4">
+                {isEditing ? (
+                  <div className="flex flex-col items-center">
+                    <input
+                      type="text"
+                      name="firstName"
+                      value={editedUser?.firstName || ""}
+                      onChange={handleInputChange}
+                      className="border p-2 rounded-md text-sm leading-normal mt-0 mb-2 text-blueGray-400 font-bold uppercase"
+                    />
+                    <input
+                      type="text"
+                      name="lastName"
+                      value={editedUser?.lastName || ""}
+                      onChange={handleInputChange}
+                      className="border p-2 rounded-md text-sm leading-normal mt-0 mb-2 text-blueGray-400 font-bold uppercase"
+                    />
+                    <input
+                      type="email"
+                      name="email"
+                      value={editedUser?.email || ""}
+                      onChange={handleInputChange}
+                      className="border p-2 rounded-md text-sm leading-normal mt-0 mb-2 text-blueGray-400 font-bold uppercase"
+                    />
                     <button
-                      onClick={() => user && alertDelete(user.idUser)}
-                      className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 cursor-pointer"
+                      onClick={handleSave}
+                      className="m-2 px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-800 cursor-pointer"
+                    >
+                      Guardar
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <h3 className="text-4xl font-semibold leading-normal text-blueGray-700 mb-2">
+                      {user?.username ?? "Cargando..."}
+                    </h3>
+                    <div className="text-sm leading-normal mt-0 mb-2 text-blueGray-400 font-bold uppercase">
+                      {user
+                        ? `${user.firstName} ${user.lastName}`
+                        : "Cargando..."}
+                    </div>
+                    <div className="mb-2 text-blueGray-600 mt-10">
+                      {user?.email ?? "Cargando..."}
+                    </div>
+                    <button
+                      onClick={handleEditClick}
+                      className="m-2 px-3 py-1 bg-yellow-600 text-white rounded-md hover:bg-yellow-800 cursor-pointer"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => alertDelete(user?.idUser || 0)}
+                      className="m-2 px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-800 cursor-pointer"
                     >
                       Eliminar
                     </button>
-                  </div>
-                </div>
+                  </>
+                )}
               </div>
             </div>
           </div>

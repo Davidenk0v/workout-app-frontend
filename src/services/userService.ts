@@ -1,3 +1,5 @@
+import { User } from "../utils/types";
+
 export const getUsers = async (token: string) => {
   return await fetch("/api/v1/user/all-users", {
     method: "GET",
@@ -26,5 +28,17 @@ export const deleteById = async (id: number) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
+  });
+};
+
+export const updateUser = async (id: number, data: User) => {
+  const token = JSON.parse(localStorage.getItem("token") || "{}").token;
+  return await fetch(`/api/v1/user/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
   });
 };
