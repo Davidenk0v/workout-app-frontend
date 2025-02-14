@@ -19,7 +19,9 @@ export const ErrorMessage: React.FC<Props> = ({ message }) => {
       </svg>
       <span className="sr-only">Info</span>
       <div>
-        <span className="font-medium">{message}</span>
+        <span data-test="errorMessage" className="font-medium">
+          {message}
+        </span>
       </div>
     </div>
   );

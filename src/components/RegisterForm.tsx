@@ -3,6 +3,7 @@ import { register } from "../services/authService";
 import { Register } from "../utils/types";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";
+import { ErrorMessage } from "./ErrorMessage";
 
 export const RegisterForm: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -10,6 +11,7 @@ export const RegisterForm: React.FC = () => {
   const [firstName, setfirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [username, setUserName] = useState<string>("");
+  const [errorMessageEmail, setErrorMessageEmail] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const navigate = useNavigate();
   const authContext = useAuth();
@@ -37,6 +39,7 @@ export const RegisterForm: React.FC = () => {
       navigate("/profile");
     } catch (e) {
       console.error(e);
+      setErrorMessage("Error al registrar el usuario");
     }
   };
 
@@ -47,13 +50,14 @@ export const RegisterForm: React.FC = () => {
     if (e.target.id === "lastName") setLastName(e.target.value);
     if (e.target.id === "username") setUserName(e.target.value);
     if (!validateEmail(email)) {
-      if (email.length === 0) setErrorMessage("");
-      return setErrorMessage("Email is not valid");
+      if (email.length === 0) setErrorMessageEmail("");
+      return setErrorMessageEmail("Email is not valid");
     }
   };
 
   return (
     <form className="max-w-sm mx-auto text-center" onSubmit={onRegister}>
+      {errorMessage && <ErrorMessage message={errorMessage} />}
       <div className="mb-5">
         <label
           htmlFor="firstname"
@@ -62,6 +66,7 @@ export const RegisterForm: React.FC = () => {
           Nombre
         </label>
         <input
+          data-test="firstname"
           onChange={handleChange}
           type="text"
           id="firstname"
@@ -79,6 +84,7 @@ export const RegisterForm: React.FC = () => {
           Apellidos
         </label>
         <input
+          data-test="lastname"
           onChange={handleChange}
           type="text"
           id="lastName"
@@ -96,6 +102,7 @@ export const RegisterForm: React.FC = () => {
           Nombre de usuario
         </label>
         <input
+          data-test="username"
           onChange={handleChange}
           type="text"
           id="username"
@@ -113,21 +120,25 @@ export const RegisterForm: React.FC = () => {
           Correo electrónico
         </label>
         <input
+          data-test="email"
           onChange={handleChange}
           type="email"
           id="email"
           value={email}
           className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ${
-            errorMessage
+            errorMessageEmail
               ? "border-red-500 focus:border-red-500"
               : "border-gray-300"
           }`}
           placeholder="Introduce tu correo electrónico"
           required
         />
-        {errorMessage && (
-          <span className="text-red-500 text-xs font-medium">
-            {errorMessage}
+        {errorMessageEmail && (
+          <span
+            data-test="bad-email-message"
+            className="text-red-500 text-xs font-medium"
+          >
+            {errorMessageEmail}
           </span>
         )}
       </div>
@@ -139,6 +150,7 @@ export const RegisterForm: React.FC = () => {
           Contraseña
         </label>
         <input
+          data-test="password"
           onChange={handleChange}
           type="password"
           id="password"
@@ -149,6 +161,7 @@ export const RegisterForm: React.FC = () => {
         />
       </div>
       <button
+        data-test="register-button"
         type="submit"
         className="text-white bg-emerald-600 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
       >

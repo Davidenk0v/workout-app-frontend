@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../auth/AuthProvider";
 import { Login } from "../utils/types";
 import { login } from "../services/authService";
+import { ErrorMessage } from "./ErrorMessage";
 
 export const LoginForm: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -10,6 +11,7 @@ export const LoginForm: React.FC = () => {
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [errorMessageEmail, setErrorMessageEmail] = useState<string>("");
 
   const onSubmitLogin = async (e: FormEvent) => {
     const validateEmail = (value: string) => {
@@ -19,7 +21,7 @@ export const LoginForm: React.FC = () => {
 
     e.preventDefault();
     if (!validateEmail(email)) {
-      setErrorMessage("Email is not valid");
+      setErrorMessageEmail("Email is not valid");
       return;
     }
     const data: Login = {
@@ -34,6 +36,7 @@ export const LoginForm: React.FC = () => {
       navigate("/profile");
     } catch (error) {
       console.log(error, "error al iniciar sesión");
+      setErrorMessage("Usuario o contraseña incorrectos");
     }
   };
 
@@ -45,6 +48,7 @@ export const LoginForm: React.FC = () => {
   return (
     <div className="max-w-sm mx-auto text-center">
       <div className="mb-5">
+        {errorMessage && <ErrorMessage message={errorMessage} />}
         <label
           htmlFor="email"
           className="block mb-2 text-sm font-medium text-black"
@@ -52,19 +56,23 @@ export const LoginForm: React.FC = () => {
           Your email
         </label>
         <input
+          data-test="email"
           onChange={handleChange}
           type="email"
           id="email"
           value={email}
           className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ${
-            errorMessage ? "border-red-500" : "border-gray-300"
+            errorMessageEmail ? "border-red-500" : "border-gray-300"
           }`}
           placeholder="Introduce tu correo electrónico"
           required
         />
-        {errorMessage && (
-          <span className="text-red-500 text-xs font-medium">
-            {errorMessage}
+        {errorMessageEmail && (
+          <span
+            data-test="bad-email"
+            className="text-red-500 text-xs font-medium"
+          >
+            {errorMessageEmail}
           </span>
         )}
       </div>
@@ -76,6 +84,7 @@ export const LoginForm: React.FC = () => {
           Your password
         </label>
         <input
+          data-test="password"
           onChange={handleChange}
           type="password"
           id="password"
@@ -85,6 +94,7 @@ export const LoginForm: React.FC = () => {
         />
       </div>
       <button
+        data-test="login-button"
         onClick={onSubmitLogin}
         className="text-white bg-emerald-600 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
       >
