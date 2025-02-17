@@ -37,6 +37,18 @@ export interface User {
   email: string;
 }
 
+export interface ErrorResponse {
+  code: string;
+  message: string;
+  response: ResponseMessage;
+  status: number;
+}
+
+export interface ResponseMessage {
+  data: string;
+  status: number;
+}
+
 export type UserList = User[];
 
 export interface Register {

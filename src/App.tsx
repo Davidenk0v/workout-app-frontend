@@ -19,7 +19,11 @@ const App: React.FC = () => {
   const ProtectedRoute = () => {
     const auth = useAuth();
 
-    return auth?.isLoggedIn ? <Outlet /> : <Navigate to="/" />;
+    if (auth === null || auth === undefined) {
+      return <Navigate to="/" />;
+    }
+
+    return auth.isLoggedIn ? <Outlet /> : <Navigate to="/" />;
   };
   return (
     <BrowserRouter>

@@ -1,4 +1,4 @@
-import { FormEvent, useContext, useState } from "react";
+import { FormEvent, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../auth/AuthProvider";
 import { Login } from "../utils/types";
@@ -12,6 +12,17 @@ export const LoginForm: React.FC = () => {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [errorMessageEmail, setErrorMessageEmail] = useState<string>("");
+
+  const checkIsLoggedIn = () => {
+    const token = JSON.parse(localStorage.getItem("token") || "{}");
+    if (token) {
+      authContext?.setIsLoggedIn(true);
+    }
+  };
+
+  useEffect(() => {
+    checkIsLoggedIn();
+  }, []);
 
   const onSubmitLogin = async (e: FormEvent) => {
     const validateEmail = (value: string) => {
@@ -32,7 +43,6 @@ export const LoginForm: React.FC = () => {
       const response = await login(data);
       localStorage.setItem("token", JSON.stringify(response.data));
       authContext?.setIsLoggedIn(true);
-      console.log(response.data);
       navigate("/profile");
     } catch (error) {
       console.log(error, "error al iniciar sesión");

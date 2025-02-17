@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { NewWorkout, Workout } from "../utils/types";
 import { WorkoutCard } from "./WorkoutCard";
 import {
@@ -14,7 +14,54 @@ import Swal from "sweetalert2";
 export const Workouts: React.FC = () => {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
 
-  const newWorkoutModel = (): void => {
+  const getWorkouts = useCallback(async () => {
+    try {
+      const idUser = getUserId();
+      const response = await getUserWorkouts(idUser);
+      if (response.ok) {
+        const workoutsData = await response.json();
+        setWorkouts(workoutsData);
+      } else {
+        console.error("Error fetching workouts: ", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching workouts: ", error);
+    }
+  }, []);
+
+  const newWorkout = useCallback(
+    async (workout: NewWorkout) => {
+      try {
+        const response = await createWorkout(workout);
+        if (response.ok) {
+          getWorkouts();
+        } else {
+          console.error("Error creating workout: ", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error creating workout: ", error);
+      }
+    },
+    [getWorkouts]
+  );
+
+  const onDelete = useCallback(
+    async (idWorkout: number) => {
+      try {
+        const response = await deleteWorkout(idWorkout);
+        if (response.ok) {
+          getWorkouts();
+        } else {
+          console.error("Error deleting workout: ", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error deleting workout: ", error);
+      }
+    },
+    [getWorkouts]
+  );
+
+  const newWorkoutModel = useCallback((): void => {
     Swal.fire({
       title: "Nuevo Entrenamiento",
       html: `<input id="swal-input1" class="swal2-input" placeholder="Nombre" required>
@@ -36,10 +83,10 @@ export const Workouts: React.FC = () => {
           document.getElementById("swal-input4") as HTMLInputElement
         ).value;
         return {
-          name: name,
-          description: description,
+          name,
+          description,
           date: new Date(),
-          result: result,
+          result,
           user: getUserId(),
         };
       },
@@ -48,63 +95,31 @@ export const Workouts: React.FC = () => {
         newWorkout(result.value);
       }
     });
-  };
+  }, [newWorkout]);
 
-  const getWorkouts = async () => {
-    try {
-      const idUser = getUserId();
-      const response = await getUserWorkouts(idUser);
-      if (response.ok) {
-        const workouts = await response.json();
-        setWorkouts(workouts);
-      }
-    } catch (error) {
-      console.error("Error fetching workouts: ", error);
-    }
-  };
-
-  const alertDelete = (id: number) => {
-    Swal.fire({
-      title: "¿Estás seguro de eliminar el entrenamiento?",
-      text: "No podrás revertir esta acción",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        onDelete(id);
-      }
-    });
-  };
-
-  const newWorkout = async (workout: NewWorkout) => {
-    try {
-      const response = await createWorkout(workout);
-      if (response.ok) {
-        getWorkouts();
-      }
-    } catch (error) {
-      console.error("Error creating workout: ", error);
-    }
-  };
-
-  const onDelete = async (idWorkout: number) => {
-    try {
-      const response = await deleteWorkout(idWorkout);
-      if (response.ok) {
-        getWorkouts();
-      }
-    } catch (error) {
-      console.error("Error deleting workout: ", error);
-    }
-  };
+  const alertDelete = useCallback(
+    (id: number) => {
+      Swal.fire({
+        title: "¿Estás seguro de eliminar el entrenamiento?",
+        text: "No podrás revertir esta acción",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          onDelete(id);
+        }
+      });
+    },
+    [onDelete]
+  );
 
   useEffect(() => {
     getWorkouts();
-  }, []);
+  }, [getWorkouts]);
 
   return (
     <div>
@@ -121,7 +136,7 @@ export const Workouts: React.FC = () => {
         </div>
       ) : (
         <div className="w-full h-full flex justify-center items-center">
-          <ErrorMessage message="No workouts found" />
+          <ErrorMessage message="No se encontraron entrenamientos" />
         </div>
       )}
     </div>

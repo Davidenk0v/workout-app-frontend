@@ -8,7 +8,9 @@ export const SuccessMessage: React.FC<Props> = ({ message }) => {
       className="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-100 text-center"
       role="alert"
     >
-      <span className="font-medium">{message}</span>
+      <span data-test="succesfully" className="font-medium">
+        {message}
+      </span>
     </div>
   );
 };

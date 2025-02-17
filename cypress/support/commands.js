@@ -29,3 +29,13 @@
 Cypress.Commands.add("getByDataTest", (value) => {
   return cy.get(`[data-test=${value}]`);
 });
+
+Cypress.Commands.add("deleteUser", (user) => {
+  cy.request({
+    method: "DELETE",
+    url: `http://localhost:8080/tests/delete/user`,
+    body: user,
+  }).then((response) => {
+    expect(response.status).to.eq(200);
+  });
+});

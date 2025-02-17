@@ -4,6 +4,7 @@ import { Register } from "../utils/types";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";
 import { ErrorMessage } from "./ErrorMessage";
+import { AxiosError } from "axios";
 
 export const RegisterForm: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -14,7 +15,7 @@ export const RegisterForm: React.FC = () => {
   const [errorMessageEmail, setErrorMessageEmail] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const navigate = useNavigate();
-  const authContext = useAuth();
+  const auth = useAuth();
 
   const validateEmail = (value: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -35,11 +36,15 @@ export const RegisterForm: React.FC = () => {
       const response = await register(formData);
       console.log(response.data);
       localStorage.setItem("token", JSON.stringify(response.data));
-      authContext?.setIsLoggedIn(true);
+      auth?.setIsLoggedIn(true);
       navigate("/profile");
-    } catch (e) {
-      console.error(e);
-      setErrorMessage("Error al registrar el usuario");
+    } catch (error) {
+      console.error(error);
+      if (error instanceof AxiosError) {
+        setErrorMessage(error.response?.data);
+      } else {
+        setErrorMessage("Error al registrar el usuario");
+      }
     }
   };
 
@@ -53,6 +58,7 @@ export const RegisterForm: React.FC = () => {
       if (email.length === 0) setErrorMessageEmail("");
       return setErrorMessageEmail("Email is not valid");
     }
+    setErrorMessageEmail("");
   };
 
   return (

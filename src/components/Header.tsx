@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../auth/AuthProvider";
 import { isAdmin } from "../utils/jwtHelper";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const Header: React.FC = () => {
   const [admin, setAdmin] = useState(false);
   const auth = useAuth();
-
+  const navigate = useNavigate();
   const logout = () => {
-    setAdmin(false);
-    auth?.logout();
+    auth?.logout(); // Realiza el logout primero
+    setAdmin(false); // Restablece el estado de admin
+    navigate("/"); // Luego navega a la página principal
   };
   const checkAdmin = () => {
     const isAdminUser = isAdmin();
@@ -18,7 +19,7 @@ export const Header: React.FC = () => {
 
   useEffect(() => {
     checkAdmin();
-  }, [auth]);
+  }, [auth, auth?.isLoggedIn]);
 
   const linkStyle =
     "block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent";
@@ -41,7 +42,7 @@ export const Header: React.FC = () => {
           <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-slate-200 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-slate-200 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
             {admin && (
               <li>
-                <Link to="/users" className={linkStyle}>
+                <Link data-test="user-link" to="/users" className={linkStyle}>
                   Usuarios
                 </Link>
               </li>
@@ -49,18 +50,27 @@ export const Header: React.FC = () => {
             {isLoggedIn ? (
               <>
                 <li>
-                  <Link to="/my-workouts" className={linkStyle}>
+                  <Link
+                    data-test="workout-link"
+                    to="/my-workouts"
+                    className={linkStyle}
+                  >
                     Mis entrenos
                   </Link>
                 </li>
                 <li>
-                  <Link to="/profile" className={linkStyle}>
+                  <Link
+                    data-test="profile-link"
+                    to="/profile"
+                    className={linkStyle}
+                  >
                     Mis perfil
                   </Link>
                 </li>
                 <li>
                   <button
-                    onClick={logout}
+                    data-test="logout-button"
+                    onClick={() => logout()}
                     className="block py-2 px-3 text-red-700 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-red-300 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
                   >
                     Logout
@@ -70,12 +80,16 @@ export const Header: React.FC = () => {
             ) : (
               <>
                 <li>
-                  <Link to="/" className={linkStyle}>
+                  <Link data-test="login-button" to="/" className={linkStyle}>
                     Login
                   </Link>
                 </li>
                 <li>
-                  <Link to="/register" className={linkStyle}>
+                  <Link
+                    data-test="register-button"
+                    to="/register"
+                    className={linkStyle}
+                  >
                     Register
                   </Link>
                 </li>

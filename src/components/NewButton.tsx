@@ -7,6 +7,7 @@ export const NewButton: React.FC<Props> = ({ openModal }) => {
     <div className="flex items-center gap-4 mb-4 font-semibold">
       Nuevo entreno
       <button
+        data-test="new-workout"
         onClick={openModal}
         data-tooltip-target="tooltip-new"
         type="button"
