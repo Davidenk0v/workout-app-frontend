@@ -39,3 +39,25 @@ Cypress.Commands.add("deleteUser", (user) => {
     expect(response.status).to.eq(200);
   });
 });
+
+Cypress.Commands.add(
+  "login",
+  (email = "juan.perez@example.com", password = "SecurePass123!") => {
+    cy.visit("/"); // Ir a la página de login
+    cy.getByDataTest("email").type(email);
+    cy.getByDataTest("password").type(password);
+    cy.getByDataTest("login-button-form").click();
+    cy.url().should("include", "/profile");
+  }
+);
+
+Cypress.Commands.add(
+  "loginAdmin",
+  (email = "luis@eviden.com", password = "1234") => {
+    cy.visit("/"); // Ir a la página de login
+    cy.getByDataTest("email").type(email);
+    cy.getByDataTest("password").type(password);
+    cy.getByDataTest("login-button-form").click();
+    cy.url().should("include", "/profile");
+  }
+);

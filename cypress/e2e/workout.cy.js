@@ -9,7 +9,7 @@ describe("Tests login and register form", () => {
     cy.get("@user").then((user) => {
       cy.getByDataTest("email").type(user.email);
       cy.getByDataTest("password").type(user.password);
-      cy.getByDataTest("login-button").click();
+      cy.getByDataTest("login-button-form").click();
       cy.url().should("include", "/profile");
     });
   });
@@ -46,7 +46,7 @@ describe("Tests login and register form", () => {
       cy.getByDataTest("firstname").type(newUser.firstName);
       cy.getByDataTest("lastname").type(newUser.lastName);
       cy.getByDataTest("username").type(newUser.username);
-      cy.getByDataTest("register-button").click();
+      cy.getByDataTest("register-button-form").click();
       cy.url().should("include", "/profile");
     });
   });
@@ -102,15 +102,7 @@ describe("Tests login and register form", () => {
 
 describe("Tests profile", () => {
   beforeEach(() => {
-    cy.session("login", () => {
-      cy.request("POST", "http://localhost:8080/auth/login", {
-        email: "luis@eviden.com",
-        password: "1234",
-      }).then((response) => {
-        cy.setCookie("token", JSON.stringify(response.body));
-        window.localStorage.setItem("token", JSON.stringify(response.body));
-      });
-    });
+    cy.login();
   });
 
   it("Editar profile", () => {
@@ -135,16 +127,7 @@ describe("Tests profile", () => {
 
 describe("Tests rutas en navbar", () => {
   beforeEach(() => {
-    cy.session("login", () => {
-      cy.request("POST", "http://localhost:8080/auth/login", {
-        email: "luis@eviden.com",
-        password: "1234",
-      }).then((response) => {
-        cy.setCookie("token", JSON.stringify(response.body));
-        window.localStorage.setItem("token", JSON.stringify(response.body));
-      });
-    });
-    cy.visit("/profile");
+    cy.loginAdmin();
   });
 
   it("Ver que al registrarte se muestran las rutas y no login y register", () => {
@@ -164,20 +147,21 @@ describe("Tests rutas en navbar", () => {
     cy.getByDataTest("user-link").click();
     cy.url().should("include", "users");
   });
+
+  it('Ruta Profile "/profile"', () => {
+    cy.getByDataTest("profile-link").click();
+    cy.url().should("include", "profile");
+  });
+
+  it("Logout", () => {
+    cy.getByDataTest("logout-button").should("exist");
+    cy.getByDataTest("logout-button").click();
+  });
 });
 
 describe("Tests workout", () => {
   beforeEach(() => {
-    cy.session("login", () => {
-      cy.request("POST", "http://localhost:8080/auth/login", {
-        email: "luis@eviden.com",
-        password: "1234",
-      }).then((response) => {
-        cy.setCookie("token", JSON.stringify(response.body));
-        window.localStorage.setItem("token", JSON.stringify(response.body));
-      });
-    });
-    cy.visit("/profile");
+    cy.loginAdmin();
   });
 
   it("Crear un workout", () => {
@@ -214,22 +198,13 @@ describe("Tests workout", () => {
   });
 });
 
-describe.only("Tests users", () => {
+describe("Tests users", () => {
   beforeEach(() => {
-    cy.session("login", () => {
-      cy.request("POST", "http://localhost:8080/auth/login", {
-        email: "luis@eviden.com",
-        password: "1234",
-      }).then((response) => {
-        cy.setCookie("token", JSON.stringify(response.body));
-        window.localStorage.setItem("token", JSON.stringify(response.body));
-      });
-    });
-    cy.visit("/profile");
+    cy.loginAdmin();
   });
 
   it("Eliminar un usuario", () => {
-    const id = "10";
+    const id = "20";
     cy.getByDataTest("user-link").click();
     cy.getByDataTest("th-id").contains(id).should("exist");
     cy.getByDataTest(`delete-${id}`).click();

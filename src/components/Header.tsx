@@ -7,9 +7,11 @@ export const Header: React.FC = () => {
   const [admin, setAdmin] = useState(false);
   const auth = useAuth();
   const navigate = useNavigate();
+
   const logout = () => {
     auth?.logout(); // Realiza el logout primero
-    setAdmin(false); // Restablece el estado de admin
+    setAdmin(false);
+    console.log("login", auth?.isLoggedIn); // Restablece el estado de admin
     navigate("/"); // Luego navega a la página principal
   };
   const checkAdmin = () => {

@@ -14,12 +14,13 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   useEffect(() => {
+    console.log(isLoggedIn);
     const tokens = JSON.parse(localStorage?.getItem("token") || "{}");
     const accessToken = tokens.token;
     if (accessToken && isValidToken(accessToken)) {
       setIsLoggedIn(true);
     } else {
-      //Si hay accessToken pero no es valido, se refresca
+      //Si hay accessToken pero no es valido
       logout();
     }
   }, []);

@@ -4,7 +4,6 @@ import { ProfileData } from "../components/ProfileData";
 
 export const Profile = () => {
   const auth = useAuth();
-  console.log(auth?.isLoggedIn);
   if (!auth?.isLoggedIn) {
     return <Navigate to="/login" />;
   }
