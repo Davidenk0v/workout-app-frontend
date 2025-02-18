@@ -1,8 +1,8 @@
-describe("Tests login and register form", () => {
+describe.only("Tests login and register form", () => {
   beforeEach(() => {
-    cy.visit("/");
     cy.fixture("user").as("user");
     cy.fixture("newUser").as("newUser");
+    cy.visit("/");
   });
 
   it("Login y redirección a profile", () => {
@@ -18,10 +18,10 @@ describe("Tests login and register form", () => {
     cy.get("@user").then((user) => {
       cy.getByDataTest("email").type("malemail.com");
       cy.getByDataTest("password").type(user.password);
-      cy.getByDataTest("errorMessage").should("not.exist");
-      cy.getByDataTest("login-button").click();
+      cy.getByDataTest("bad-email").should("not.exist");
+      cy.getByDataTest("login-button-form").click();
       cy.getByDataTest("email").should("have.class", "border-red-500");
-      cy.getByDataTest("errorMessage").should("exist");
+      cy.getByDataTest("bad-email").should("exist");
     });
   });
 
@@ -30,7 +30,7 @@ describe("Tests login and register form", () => {
       cy.getByDataTest("email").type(user.email);
       cy.getByDataTest("password").type("12222");
       cy.getByDataTest("bad-email").should("not.exist");
-      cy.getByDataTest("login-button").click();
+      cy.getByDataTest("login-button-form").click();
       cy.getByDataTest("errorMessage")
         .should("exist")
         .should("have.text", "Usuario o contraseña incorrectos");
@@ -72,7 +72,7 @@ describe("Tests login and register form", () => {
       cy.getByDataTest("firstname").type(user.firstName);
       cy.getByDataTest("lastname").type(user.lastName);
       cy.getByDataTest("username").type(user.username);
-      cy.getByDataTest("register-button").click();
+      cy.getByDataTest("register-button-form").click();
       cy.getByDataTest("errorMessage").should("exist");
       cy.getByDataTest("errorMessage").should(
         "have.text",
@@ -90,7 +90,7 @@ describe("Tests login and register form", () => {
       cy.getByDataTest("firstname").type(user.firstName);
       cy.getByDataTest("lastname").type(user.lastName);
       cy.getByDataTest("username").type(user.username);
-      cy.getByDataTest("register-button").click();
+      cy.getByDataTest("register-button-form").click();
       cy.getByDataTest("errorMessage").should("exist");
       cy.getByDataTest("errorMessage").should(
         "have.text",
@@ -204,7 +204,7 @@ describe("Tests users", () => {
   });
 
   it("Eliminar un usuario", () => {
-    const id = "20";
+    const id = "23";
     cy.getByDataTest("user-link").click();
     cy.getByDataTest("th-id").contains(id).should("exist");
     cy.getByDataTest(`delete-${id}`).click();
@@ -215,5 +215,144 @@ describe("Tests users", () => {
       .contains(/Sí, eliminar/i)
       .click();
     cy.getByDataTest("th-id").contains(id).should("not.exist");
+  });
+});
+
+describe("Workout API Tests", () => {
+  const API_URL = "http://localhost:8080/api/v1/workout";
+  const userId = 2; // Cambiar esto según el usuario de prueba
+  let token;
+
+  before(() => {
+    cy.window().then((win) => {
+      cy.loginAdmin().then(() => {
+        const tokens = JSON.parse(win.localStorage.getItem("token"));
+        token = tokens.token;
+      });
+    });
+  });
+
+  beforeEach(() => {
+    cy.visit("/");
+  });
+
+  it("Debe obtener un workout por ID", () => {
+    cy.request({
+      method: "GET",
+      url: `${API_URL}/2`,
+      headers: { Authorization: `Bearer ${token}` },
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.workout).to.have.property("idWorkout", 2);
+    });
+  });
+
+  it("Debe obtener todos los workouts", () => {
+    cy.request({
+      method: "GET",
+      url: `${API_URL}/all-workouts`,
+      headers: { Authorization: `Bearer ${token}` },
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body).to.be.an("array");
+    });
+  });
+
+  it("Debe obtener los workouts de un usuario específico", () => {
+    cy.request({
+      method: "GET",
+      url: `${API_URL}/user-workouts/${userId}`,
+      headers: { Authorization: `Bearer ${token}` },
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body).to.be.an("array");
+    });
+  });
+
+  it("Debe crear un nuevo workout", () => {
+    cy.request({
+      method: "POST",
+      url: `${API_URL}/create`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: {
+        name: "Workout de prueba",
+        description: "workout creado desde test",
+        result: "tu resultado",
+        user: userId,
+        date: new Date(),
+      },
+    }).then((response) => {
+      expect(response.status).to.eq(201);
+      expect(response.body).to.have.property("idWorkout");
+    });
+  });
+
+  it("Debe actualizar un workout existente", () => {
+    cy.request({
+      method: "PUT",
+      url: `${API_URL}/40`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: {
+        name: "Workout actualizado",
+        description: "workout actualizad desde test",
+        result: "tu resultado actualizado",
+        user: userId,
+        date: new Date(),
+      },
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.requestBody).to.contains("Workout actualizado");
+      expect(response.body).to.have.property("name", "Workout actualizado");
+    });
+  });
+
+  it("Debe eliminar un workout por ID", () => {
+    cy.request({
+      method: "DELETE",
+      url: `${API_URL}/38`,
+      headers: { Authorization: `Bearer ${token}` },
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+    });
+  });
+
+  it("Debe devolver un error si no se envía el token", () => {
+    cy.request({
+      method: "GET",
+      url: `${API_URL}/2`,
+      failOnStatusCode: false,
+    }).then((response) => {
+      expect(response.status).to.eq(401);
+    });
+  });
+});
+
+describe("User API tests", () => {
+  const API_URL = "http://localhost:5173/api/v1/user";
+  let token;
+  before(() => {
+    cy.window().then((win) => {
+      cy.login().then(() => {
+        const tokens = JSON.parse(win.localStorage.getItem("token"));
+        console.log(tokens);
+        token = tokens.token;
+      });
+    });
+  });
+
+  it.only("Debe devolver un error al acceder a una ruta de ROL admin", () => {
+    cy.request({
+      method: "GET",
+      url: `${API_URL}/all-users`,
+      failOnStatusCode: false,
+    }).then((response) => {
+      expect(response.status).to.eq(401);
+    });
   });
 });
