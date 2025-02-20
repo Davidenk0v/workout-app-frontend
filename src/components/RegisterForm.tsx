@@ -34,7 +34,6 @@ export const RegisterForm: React.FC = () => {
     };
     try {
       const response = await register(formData);
-      console.log(response.data);
       localStorage.setItem("token", JSON.stringify(response.data));
       auth?.setIsLoggedIn(true);
       navigate("/profile");

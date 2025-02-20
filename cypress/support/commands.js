@@ -61,3 +61,15 @@ Cypress.Commands.add(
     cy.url().should("include", "/profile");
   }
 );
+
+Cypress.Commands.add("sessionAdmin", () => {
+  cy.session("adminSession", () => {
+    cy.loginAdmin();
+  });
+});
+
+Cypress.Commands.add("sessionUser", () => {
+  cy.session("adminSession", () => {
+    cy.login();
+  });
+});

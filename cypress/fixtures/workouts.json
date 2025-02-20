@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Full Body Blast",
+    "description": "Rutina de cuerpo completo con pesas y cardio",
+    "result": "Completado en 45 minutos",
+    "user": 2,
+    "date": "2025-02-18T08:30:00Z"
+  },
+  {
+    "name": "Leg Day Inferno",
+    "description": "Entrenamiento intenso de piernas con sentadillas y peso muerto",
+    "result": "Levanté 120 kg en peso muerto",
+    "user": 2,
+    "date": "2025-02-17T10:15:00Z"
+  },
+  {
+    "name": "Upper Body Strength",
+    "description": "Ejercicios de fuerza para pecho, espalda y brazos",
+    "result": "Mejoré en dominadas, hice 12 seguidas",
+    "user": 2,
+    "date": "2025-02-16T07:45:00Z"
+  },
+  {
+    "name": "HIIT Madness",
+    "description": "Circuito de alta intensidad con burpees, saltos y sprints",
+    "result": "Ritmo cardíaco máximo de 180 BPM",
+    "user": 2,
+    "date": "2025-02-15T18:00:00Z"
+  },
+  {
+    "name": "Core Crusher",
+    "description": "Entrenamiento enfocado en abdomen y zona media",
+    "result": "Hice plancha por 3 minutos seguidos",
+    "user": 2,
+    "date": "2025-02-14T12:30:00Z"
+  }
+]
