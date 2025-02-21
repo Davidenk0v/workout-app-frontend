@@ -9,6 +9,7 @@ interface FormProps {
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: () => void;
   errorMessage?: string;
+  errorMessageEmail?: string;
 }
 
 const RegForm: React.FC<FormProps> = ({
@@ -16,6 +17,7 @@ const RegForm: React.FC<FormProps> = ({
   handleChange,
   handleSubmit,
   errorMessage,
+  errorMessageEmail,
 }) => {
   return (
     <form className="max-w-sm mx-auto text-center">
@@ -35,19 +37,19 @@ const RegForm: React.FC<FormProps> = ({
             id={id}
             value={formValues[id as keyof typeof formValues]}
             className={`bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ${
-              errorMessage && id === "email"
+              errorMessageEmail && id === "email"
                 ? "border-red-500 focus:border-red-500"
                 : "border-gray-300"
             }`}
             placeholder={placeholder}
             required
           />
-          {errorMessage && id === "email" && (
+          {errorMessageEmail && id === "email" && (
             <span
               data-test="bad-email-message"
               className="text-red-500 text-xs font-medium"
             >
-              {errorMessage}
+              {errorMessageEmail}
             </span>
           )}
         </div>
