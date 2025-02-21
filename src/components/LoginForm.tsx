@@ -1,115 +1,76 @@
-import { FormEvent, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../auth/AuthProvider";
-import { Login } from "../utils/types";
-import { login } from "../services/authService";
-import { ErrorMessage } from "./ErrorMessage";
+import { withForm } from "../hoc/with.form";
+import { Login } from "../types/user";
+import { LOGIN_INPUTS } from "../utils/consts";
+import AlertMessage from "./AlertMessage";
+import Button from "./Button";
 
-export const LoginForm: React.FC = () => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const authContext = useContext(AuthContext);
-  const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState<string>("");
-  const [errorMessageEmail, setErrorMessageEmail] = useState<string>("");
+interface FormProps {
+  formValues: Login;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSubmit: () => void;
+  errorMessageEmail: string;
+  errorMessage: string;
+}
 
-  const checkIsLoggedIn = () => {
-    const token = JSON.parse(localStorage.getItem("token") || "{}").token;
-    if (token) {
-      authContext?.setIsLoggedIn(true);
-    }
-  };
-
-  useEffect(() => {
-    checkIsLoggedIn();
-  }, []);
-
-  const onSubmitLogin = async (e: FormEvent) => {
-    const validateEmail = (value: string) => {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(value);
-    };
-
-    e.preventDefault();
-    if (!validateEmail(email)) {
-      setErrorMessageEmail("Email is not valid");
-      return;
-    }
-    const data: Login = {
-      email,
-      password,
-    };
-    try {
-      const response = await login(data);
-      localStorage.setItem("token", JSON.stringify(response.data));
-      authContext?.setIsLoggedIn(true);
-      navigate("/profile");
-    } catch (error) {
-      console.log(error, "error al iniciar sesión");
-      setErrorMessage("Usuario o contraseña incorrectos");
-    }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.id === "email") setEmail(e.target.value);
-    if (e.target.id === "password") setPassword(e.target.value);
-  };
-
+export const Form = ({
+  formValues,
+  handleChange,
+  errorMessageEmail,
+  errorMessage,
+  handleSubmit,
+}: FormProps) => {
   return (
     <div className="max-w-sm mx-auto text-center">
-      <div className="mb-5">
-        {errorMessage && <ErrorMessage message={errorMessage} />}
-        <label
-          htmlFor="email"
-          className="block mb-2 text-sm font-medium text-black"
-        >
-          Your email
-        </label>
-        <input
-          data-test="email"
-          onChange={handleChange}
-          type="email"
-          id="email"
-          value={email}
-          className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ${
-            errorMessageEmail ? "border-red-500" : "border-gray-300"
-          }`}
-          placeholder="Introduce tu correo electrónico"
-          required
-        />
-        {errorMessageEmail && (
-          <span
-            data-test="bad-email"
-            className="text-red-500 text-xs font-medium"
-          >
-            {errorMessageEmail}
-          </span>
-        )}
-      </div>
-      <div className="mb-5">
-        <label
-          htmlFor="password"
-          className="block mb-2 text-sm font-medium text-black"
-        >
-          Your password
-        </label>
-        <input
-          data-test="password"
-          onChange={handleChange}
-          type="password"
-          id="password"
-          placeholder="Introduce your password"
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          required
-        />
-      </div>
-      <button
+      {errorMessage && <AlertMessage text={errorMessage} type="error" />}
+      {LOGIN_INPUTS.map(({ id, label, placeholder, type }) => (
+        <>
+          <div className="mb-5">
+            <label
+              htmlFor="email"
+              className="block mb-2 text-sm font-medium text-black"
+            >
+              {label}
+            </label>
+            <input
+              data-test={id}
+              onChange={handleChange}
+              type={type}
+              id={id}
+              value={formValues[id as keyof typeof formValues]}
+              className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ${
+                label == "Correo electrónico" && errorMessageEmail
+                  ? "border-red-500"
+                  : "border-gray-300"
+              }`}
+              placeholder={placeholder}
+              required
+            />
+            {label == "Correo electrónico" && errorMessageEmail && (
+              <span
+                data-test="bad-email"
+                className="text-red-500 text-xs font-medium"
+              >
+                {errorMessageEmail}
+              </span>
+            )}
+          </div>
+        </>
+      ))}
+      <Button
         data-test="login-button-form"
-        onClick={onSubmitLogin}
-        className="text-white bg-emerald-600 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
-      >
-        Login
-      </button>
+        onClick={handleSubmit}
+        type="submit"
+        text="Login"
+      />
     </div>
   );
 };
+
+export const LoginForm = withForm(
+  Form,
+  {
+    email: "",
+    password: "",
+  },
+  "login"
+);

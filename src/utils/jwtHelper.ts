@@ -1,6 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 import { refreshToken } from "../services/authService";
-import { DecodedToken } from "./types";
+import { DecodedToken } from "../types/auth";
 
 export const refreshTokenIfExpired = async (token: string): Promise<void> => {
   if (token && !isValidToken(token)) {

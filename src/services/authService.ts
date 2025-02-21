@@ -1,6 +1,6 @@
 import axios from "axios";
 import { API_URL } from "../utils/consts";
-import { Login, Register } from "../utils/types";
+import { Login, Register } from "../types/user";
 
 export const register = async (register: Register) => {
   return axios.post(`${API_URL}/auth/register`, register);

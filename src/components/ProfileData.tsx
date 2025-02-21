@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { User } from "../utils/types";
+import { User, idUser } from "../types/user";
 import { deleteById, getMe, updateUser } from "../services/userService";
 import { getUserWorkouts } from "../services/workoutService";
 import Swal from "sweetalert2";
 import { useAuth } from "../auth/AuthProvider";
-import { SuccessMessage } from "./SuccessMesage";
 import { useNavigate } from "react-router-dom";
+import AlertMessage from "./AlertMessage";
+import Button from "./Button";
 
 export const ProfileData = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -57,7 +58,7 @@ export const ProfileData = () => {
     }
   }, [user]);
 
-  const deleteProfile = async (id: number) => {
+  const deleteProfile = async (id: idUser) => {
     try {
       const response = await deleteById(id);
       console.log(response.json());
@@ -70,7 +71,7 @@ export const ProfileData = () => {
     setIsEditing(true);
   };
 
-  const alertDelete = (id: number) => {
+  const alertDelete = (id: idUser) => {
     Swal.fire({
       title: "¿Estás seguro de eliminar tu cuenta?",
       text: "Se cerrará sesión y se eliminará tu cuenta para siempre",
@@ -96,7 +97,7 @@ export const ProfileData = () => {
   const handleSave = async () => {
     if (!editedUser) return;
     try {
-      await updateUser(editedUser.idUser, editedUser);
+      await updateUser({ idUser: editedUser.idUser }, editedUser);
       setUser(editedUser);
       setIsEditing(false);
       setSuccessfullyMessage("Cambios guardados correctamente");
@@ -112,7 +113,7 @@ export const ProfileData = () => {
         <div className="absolute top-0 w-full h-full bg-center bg-cover">
           <span className="w-full h-full absolute opacity-50 bg-black"></span>
           {successfullyMessage && (
-            <SuccessMessage message={successfullyMessage} />
+            <AlertMessage text={successfullyMessage} type="success" />
           )}
         </div>
       </section>
@@ -191,20 +192,16 @@ export const ProfileData = () => {
                     >
                       {user?.email ?? "Cargando..."}
                     </div>
-                    <button
-                      data-test="edit-button"
+                    <Button
+                      type="edit"
+                      text="Editar cuenta"
                       onClick={handleEditClick}
-                      className="m-2 px-3 py-1 bg-yellow-600 text-white rounded-md hover:bg-yellow-800 cursor-pointer"
-                    >
-                      Editar
-                    </button>
-                    <button
-                      data-test="delete-button"
-                      onClick={() => alertDelete(user?.idUser || 0)}
-                      className="m-2 px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-800 cursor-pointer"
-                    >
-                      Eliminar
-                    </button>
+                    />
+                    <Button
+                      type="delete"
+                      text="Eliminar"
+                      onClick={() => alertDelete({ idUser: user!.idUser })}
+                    />
                   </>
                 )}
               </div>
