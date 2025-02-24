@@ -1,8 +1,9 @@
-import { withForm } from "../hoc/with.form";
+import { withForm } from "../hooks/with.form";
 import { REGISTER_INPUTS } from "../utils/consts";
 import { Register } from "../types/user";
 import AlertMessage from "./AlertMessage";
 import Button from "./Button";
+import { useSEO } from "../hooks/useSEO";
 
 interface FormProps {
   formValues: Register;
@@ -19,6 +20,10 @@ const RegForm: React.FC<FormProps> = ({
   errorMessage,
   errorMessageEmail,
 }) => {
+  useSEO({
+    title: "Crea una cuenta",
+    description: "Crea una cuenta en la aplicación",
+  });
   return (
     <form className="max-w-sm mx-auto text-center">
       {errorMessage && <AlertMessage text={errorMessage} type="warning" />}

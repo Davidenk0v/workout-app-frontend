@@ -12,8 +12,7 @@ import { useAuth } from "./auth/AuthProvider";
 import { Profile } from "./routes/profile";
 import { Users } from "./routes/users";
 import { MyWorkouts } from "./routes/my-workouts";
-import { Header } from "./components/Header";
-import { Footer } from "./components/Footer";
+import { Layout } from "./layouts/Layout";
 
 const App: React.FC = () => {
   const ProtectedRoute = () => {
@@ -27,17 +26,17 @@ const App: React.FC = () => {
   };
   return (
     <BrowserRouter>
-      <Header />
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route element={<ProtectedRoute />}>
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/users" element={<Users />} />
-          <Route path="/my-workouts" element={<MyWorkouts />} />
-        </Route>
-      </Routes>
-      <Footer />
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/users" element={<Users />} />
+            <Route path="/my-workouts" element={<MyWorkouts />} />
+          </Route>
+        </Routes>
+      </Layout>
     </BrowserRouter>
   );
 };

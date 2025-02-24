@@ -30,7 +30,7 @@ export const Header: React.FC = () => {
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <Link
           to="/"
-          className="flex items-center space-x-3 rtl:space-x-reverse"
+          className="flex items-center space-x-4 rtl:space-x-reverse"
         >
           <h1 className="mb-4 text-2xl font-extrabold text-center p-4 text-gray-900 dark:text-white">
             <span className="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">

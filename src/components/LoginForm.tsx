@@ -1,4 +1,5 @@
-import { withForm } from "../hoc/with.form";
+import { useSEO } from "../hooks/useSEO";
+import { withForm } from "../hooks/with.form";
 import { Login } from "../types/user";
 import { LOGIN_INPUTS } from "../utils/consts";
 import AlertMessage from "./AlertMessage";
@@ -19,6 +20,10 @@ export const Form = ({
   errorMessage,
   handleSubmit,
 }: FormProps) => {
+  useSEO({
+    title: "Inicia sesión",
+    description: "Inicia sesión en la aplicación",
+  });
   return (
     <div className="max-w-sm mx-auto text-center">
       {errorMessage && <AlertMessage text={errorMessage} type="error" />}

@@ -7,6 +7,7 @@ import { useAuth } from "../auth/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import AlertMessage from "./AlertMessage";
 import Button from "./Button";
+import { useSEO } from "../hooks/useSEO";
 
 export const ProfileData = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -16,6 +17,10 @@ export const ProfileData = () => {
   const [successfullyMessage, setSuccessfullyMessage] = useState<string>("");
   const auth = useAuth();
   const navigate = useNavigate();
+  useSEO({
+    title: user?.username || "Mi perfil",
+    description: "Mis datos personales",
+  });
   // Función para obtener datos del usuario
   const getUserData = async () => {
     try {

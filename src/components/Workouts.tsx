@@ -10,9 +10,14 @@ import { getUserId } from "../utils/jwtHelper";
 import AlertMessage from "./AlertMessage";
 import { deleteWorkoutSwal, newWorkoutSwal } from "../utils/sweetAlert";
 import Button from "./Button";
+import { useSEO } from "../hooks/useSEO";
 
 export const Workouts: React.FC = () => {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
+  useSEO({
+    title: "Mis entrenamientos",
+    description: "Aquí puedes ver tus entrenamientos",
+  });
 
   const getWorkouts = useCallback(async () => {
     try {
@@ -78,11 +83,7 @@ export const Workouts: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Button
-        text="Nuevo Entrenamiento "
-        type="add"
-        onClick={newWorkoutModel}
-      />
+      <Button text="Nuevo entreno" type="add" onClick={newWorkoutModel} />
       {workouts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {workouts.map((workout) => (

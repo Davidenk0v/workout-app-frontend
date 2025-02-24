@@ -8,7 +8,7 @@ Training Tracker es una aplicación web desarrollada con **React**, **Vite**, **
 - 🎨 **TailwindCSS** - Para un estilizado moderno y responsive.
 - 📝 **TypeScript** - Para un código más seguro y escalable.
 - ✅ **Cypress** - Para pruebas end-to-end automatizadas.
-- 🏗️ **Patrones de diseño**: 
+- 🏗️ **Patrones de diseño**:
   - **HOC (Higher-Order Components)**
   - **Factory Pattern**
   - **Compound Components**
@@ -43,12 +43,15 @@ npm run dev
 ## 🏗️ Patrones de Diseño Implementados
 
 ### 🔹 Higher-Order Components (HOC)
+
 Utilizado para manejar la autenticación de los usuarios y mejorar la reutilización del código.
 
 ### 🔹 Factory Pattern
+
 Se aplica para la creación dinámica de componentes reutilizables, como formularios o tarjetas de entrenamientos.
 
 ### 🔹 Compound Components
+
 Usado para mejorar la flexibilidad de los componentes, permitiendo una mejor composición en la UI.
 
 ## 🛠️ Scripts Disponibles
@@ -59,7 +62,8 @@ npm run build      # Construye la aplicación para producción
 npm run lint       # Analiza el código en busca de errores
 npx cypress open   # Ejecuta pruebas unitarias en cypress
 ```
-## 📌 Ejemplo de Código: 
+
+## 📌 Ejemplo de Código:
 
 ## Contexto de la Tabla
 
@@ -130,13 +134,12 @@ export const TableProvider: React.FC<Props> = ({ children }) => {
 
   const providerValues = { users, alertDelete };
 
-  return (
-    <Provider value={providerValues}>{children}</Provider>
-  );
+  return <Provider value={providerValues}>{children}</Provider>;
 };
 
 export const useTable = () => useContext(TableContext);
 ```
+
 ## 📌 HOC de Login y Register
 
 ```tsx
@@ -229,9 +232,29 @@ export const withForm = (
 
   return FormLogicComponent;
 };
-
 ```
+
+## 📌Modificar el title y el description de una aplicación en React para el SEO
+
+```tsx
+import { useEffect } from "react";
+
+export const useSEO = ({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) => {
+  useEffect(() => {
+    document.title = title;
+    document
+      .querySelector('meta[name="description"]')
+      ?.setAttribute("content", description);
+  }, [title, description]);
+};
+```
+
 ---
 
 _Desarrollado con ❤️ por [David](https://github.com/davidenk0v)_
-
