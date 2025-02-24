@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect, createContext } from "react";
 
-import type { AuthProviderProps } from "../utils/types";
+import type { AuthProviderProps } from "../types/auth.d.ts";
 import { isValidToken } from "../utils/jwtHelper.ts";
 
 interface AuthContextType {

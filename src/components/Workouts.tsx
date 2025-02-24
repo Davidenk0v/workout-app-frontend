@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { NewWorkout, Workout } from "../utils/types";
+import { NewWorkout, Workout } from "../types/workout";
 import { WorkoutCard } from "./WorkoutCard";
 import {
   createWorkout,
@@ -7,9 +7,9 @@ import {
   getUserWorkouts,
 } from "../services/workoutService";
 import { getUserId } from "../utils/jwtHelper";
-import { ErrorMessage } from "./ErrorMessage";
-import { NewButton } from "./NewButton";
-import Swal from "sweetalert2";
+import AlertMessage from "./AlertMessage";
+import { deleteWorkoutSwal, newWorkoutSwal } from "../utils/sweetAlert";
+import Button from "./Button";
 
 export const Workouts: React.FC = () => {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -62,57 +62,12 @@ export const Workouts: React.FC = () => {
   );
 
   const newWorkoutModel = useCallback((): void => {
-    Swal.fire({
-      title: "Nuevo Entrenamiento",
-      html: `<input id="swal-input1" class="swal2-input" placeholder="Nombre" required>
-      <input id="swal-input2" class="swal2-input" placeholder="Descripción" required>
-      <input id="swal-input4" class="swal2-input" placeholder="Resultado" required>`,
-      focusConfirm: false,
-      showCancelButton: true,
-      confirmButtonText: "Guardar",
-      cancelButtonColor: "#d33",
-      confirmButtonColor: "#3085d6",
-      preConfirm: () => {
-        const name = (
-          document.getElementById("swal-input1") as HTMLInputElement
-        ).value;
-        const description = (
-          document.getElementById("swal-input2") as HTMLInputElement
-        ).value;
-        const result = (
-          document.getElementById("swal-input4") as HTMLInputElement
-        ).value;
-        return {
-          name,
-          description,
-          date: new Date(),
-          result,
-          user: getUserId(),
-        };
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        newWorkout(result.value);
-      }
-    });
+    newWorkoutSwal(newWorkout, getUserId);
   }, [newWorkout]);
 
   const alertDelete = useCallback(
     (id: number) => {
-      Swal.fire({
-        title: "¿Estás seguro de eliminar el entrenamiento?",
-        text: "No podrás revertir esta acción",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Sí, eliminar",
-        cancelButtonText: "Cancelar",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          onDelete(id);
-        }
-      });
+      deleteWorkoutSwal(id, onDelete);
     },
     [onDelete]
   );
@@ -122,10 +77,14 @@ export const Workouts: React.FC = () => {
   }, [getWorkouts]);
 
   return (
-    <div>
-      <NewButton openModal={newWorkoutModel} />
+    <div className="container mx-auto px-4 py-8">
+      <Button
+        text="Nuevo Entrenamiento "
+        type="add"
+        onClick={newWorkoutModel}
+      />
       {workouts.length > 0 ? (
-        <div className="grid grid-cols-1 gap-4 px-4 py-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {workouts.map((workout) => (
             <WorkoutCard
               key={workout.idWorkout}
@@ -135,8 +94,8 @@ export const Workouts: React.FC = () => {
           ))}
         </div>
       ) : (
-        <div className="w-full h-full flex justify-center items-center">
-          <ErrorMessage message="No se encontraron entrenamientos" />
+        <div className="flex justify-center items-center h-64">
+          <AlertMessage text="No hay entrenamientos" type="warning" />
         </div>
       )}
     </div>

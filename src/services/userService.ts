@@ -1,4 +1,4 @@
-import { User } from "../utils/types";
+import { idUser, User } from "../types/user";
 
 export const getUsers = async (token: string) => {
   return await fetch("/api/v1/user/all-users", {
@@ -20,9 +20,9 @@ export const getMe = async (token: string) => {
   });
 };
 
-export const deleteById = async (id: number) => {
+export const deleteById = async (id: idUser) => {
   const token = JSON.parse(localStorage.getItem("token") || "{}").token;
-  return await fetch(`/api/v1/user/${id}`, {
+  return await fetch(`/api/v1/user/${id.idUser}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -31,7 +31,7 @@ export const deleteById = async (id: number) => {
   });
 };
 
-export const updateUser = async (id: number, data: User) => {
+export const updateUser = async (id: idUser, data: User) => {
   const token = JSON.parse(localStorage.getItem("token") || "{}").token;
   return await fetch(`/api/v1/user/${id}`, {
     method: "PUT",
