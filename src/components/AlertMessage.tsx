@@ -7,6 +7,9 @@ interface AlertMessageProps {
   text?: string; // Texto opcional (si no se pasa, usa el default)
 }
 
+// Este componente recibe un tipo de mensaje y un texto opcional
+// Dependiendo del tipo de mensaje, renderiza un mensaje diferente
+// Si no se pasa texto, usa el texto por defecto
 const AlertMessage: React.FC<AlertMessageProps> = ({ type, text }) => {
   const { defaultText, color, icon } = messageFactory(type);
 

@@ -13,6 +13,9 @@ interface AlertMessageProps {
   onClick: () => void;
 }
 
+// Este componente recibe un tipo de botón y un texto opcional
+// Dependiendo del tipo de botón, renderiza un botón diferente
+// Si no se pasa texto, usa el texto por defecto
 const Button: React.FC<AlertMessageProps> = ({ type, text, onClick }) => {
   const { defaultText } = buttonFactory(type);
 

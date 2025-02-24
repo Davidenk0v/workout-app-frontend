@@ -6,6 +6,8 @@ import { Login, Register } from "../types/user";
 import axios from "axios";
 
 // Hoc para manejar la lógica de los formularios. Tanto la de register como la de logín, abstrayendo la lógica de los componentes en si.
+// Recibe un componente, un estado inicial y el tipo de formulario que es.
+// Devuelve un componente con la lógica de los formularios.
 export const withForm = (
   Component: React.ComponentType<Login | Register>,
   initialState: Login | Register,

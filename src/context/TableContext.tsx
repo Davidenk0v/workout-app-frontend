@@ -18,6 +18,11 @@ interface Props {
   children: React.ReactNode; // Propiedades que recibe el componente, en este caso, los hijos
 }
 
+// Proveedor del contexto de la tabla
+// Este componente se encarga de cargar la lista de usuarios y eliminar un usuario
+// Se encarga de manejar la lógica de la tabla
+// Se basa en el patrón de diseño Compound Components
+// Los componentes hijos pueden acceder a los valores del contexto
 export const TableProvider: React.FC<Props> = ({ children }) => {
   const [users, setUsers] = useState<UserList>([]);
 
