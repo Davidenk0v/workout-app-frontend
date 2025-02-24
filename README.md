@@ -316,6 +316,45 @@ export const useWorkouts = () => {
 };
 ```
 
+## 📌Usando useReducer para la lógica de los usuarios
+
+```tsx
+type initialState = User[];
+type UserAction =
+  | { type: "ADD"; payload: User }
+  | { type: "REMOVE"; payload: idUser }
+  | { type: "UPDATE"; payload: User; id: idUser }
+  | { type: "SET"; payload: User[] }; //Setea los usuarios
+
+export const usersReducer = (
+  state: initialState,
+  action: UserAction
+): initialState => {
+  switch (action.type) {
+    case "ADD":
+      return [...state, action.payload];
+    case "REMOVE":
+      return state.filter((user) => user.idUser !== action.payload.idUser);
+    case "UPDATE":
+      return state.map((user) =>
+        user.idUser === action.id.idUser ? action.payload : user
+      );
+    case "SET":
+      return action.payload;
+    default:
+      return state;
+  }
+};
+```
+
+## 📌Y lo usamos así
+
+```tsx
+const [users, dispatch] = useReducer(usersReducer, []);
+
+dispatch({ type: "REMOVE", payload: data });
+```
+
 ---
 
 _Desarrollado con ❤️ por [David](https://github.com/davidenk0v)_
