@@ -24,9 +24,9 @@ export const ProfileData = () => {
   // Función para obtener datos del usuario
   const getUserData = async () => {
     try {
-      const tokens = JSON.parse(localStorage.getItem("token") || "{}");
-      if (!tokens.token) return;
-      const response = await getMe(tokens.token);
+      const token = auth?.token;
+      if (!token) return;
+      const response = await getMe(token);
       if (response.ok) {
         const data = await response.json();
         setUser(data);
@@ -54,7 +54,7 @@ export const ProfileData = () => {
   // Obtener datos del usuario al montar el componente
   useEffect(() => {
     getUserData();
-  }, []);
+  }, [auth]);
 
   // Llamar `getNumberOfWorkouts()` solo cuando `user` cambie
   useEffect(() => {

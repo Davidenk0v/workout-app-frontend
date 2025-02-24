@@ -9,8 +9,7 @@ import { getUserId } from "../utils/jwtHelper";
 
 // Hook para obtener los entrenamientos del usuario
 // Abstraigo la lógica de los entrenamientos en este hook
-// Devuelve los entrenamientos, la función para obtenerlos,
-// la función para crear un nuevo entrenamiento y la función para borrar un entrenamiento
+// Devuelve los entrenamientos, la función para obtenerlos, la función para crear un nuevo entrenamiento y la función para borrar un entrenamiento
 export const useWorkouts = () => {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
 

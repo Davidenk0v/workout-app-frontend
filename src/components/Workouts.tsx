@@ -9,7 +9,6 @@ import { useWorkouts } from "../hooks/useWorkouts";
 
 export const Workouts: React.FC = () => {
   const { workouts, newWorkout, onDelete, getWorkouts } = useWorkouts();
-
   useSEO({
     title: "Mis entrenamientos",
     description: "Aquí puedes ver tus entrenamientos",

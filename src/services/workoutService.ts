@@ -1,4 +1,4 @@
-import { NewWorkout } from "../utils/types";
+import { NewWorkout } from "../types/workout";
 
 export const getUserWorkouts = async (idUser: number) => {
   const token = JSON.parse(localStorage.getItem("token") || "{}").token;
