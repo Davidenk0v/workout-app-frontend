@@ -1,8 +1,9 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useReducer } from "react";
 import { idUser, UserList } from "../types/user";
 import Swal from "sweetalert2";
 import { deleteById, getUsers } from "../services/userService";
 import { deleteUserSwal } from "../utils/sweetAlert";
+import { usersReducer } from "../hooks/usersReducer";
 
 // Definición de la interfaz para el contexto
 interface TableContextType {
@@ -24,15 +25,14 @@ interface Props {
 // Se basa en el patrón de diseño Compound Components
 // Los componentes hijos pueden acceder a los valores del contexto
 export const TableProvider: React.FC<Props> = ({ children }) => {
-  const [users, setUsers] = useState<UserList>([]);
+  const [users, dispatch] = useReducer(usersReducer, []);
 
   const deleteUser = async (id: idUser) => {
     try {
       const response = await deleteById(id);
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
-        getUserList();
+        dispatch({ type: "REMOVE", payload: data });
       }
     } catch (e) {
       console.error("Error al eliminar el usuario", e);
@@ -50,7 +50,7 @@ export const TableProvider: React.FC<Props> = ({ children }) => {
       const response = await getUsers(token.token);
       if (response.ok) {
         const userList = await response.json();
-        setUsers(userList);
+        dispatch({ type: "SET", payload: userList });
       } else {
         Swal.fire({
           icon: "error",
@@ -75,7 +75,7 @@ export const TableProvider: React.FC<Props> = ({ children }) => {
   // useEffect para cargar la lista de usuarios cuando el componente se monta
   useEffect(() => {
     getUserList();
-  }, []);
+  }, [users]);
 
   // Valores que se proveerán a los componentes hijos
   const providerValues = { users, alertDelete };

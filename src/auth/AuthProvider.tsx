@@ -11,8 +11,7 @@ interface AuthContextType {
   isAdmin: boolean;
   idUser: number | null;
 }
-{
-}
+
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
