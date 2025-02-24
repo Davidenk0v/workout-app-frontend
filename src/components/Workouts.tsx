@@ -1,70 +1,19 @@
-import { useEffect, useState, useCallback } from "react";
-import { NewWorkout, Workout } from "../types/workout";
+import { useEffect, useCallback } from "react";
 import { WorkoutCard } from "./WorkoutCard";
-import {
-  createWorkout,
-  deleteWorkout,
-  getUserWorkouts,
-} from "../services/workoutService";
 import { getUserId } from "../utils/jwtHelper";
 import AlertMessage from "./AlertMessage";
 import { deleteWorkoutSwal, newWorkoutSwal } from "../utils/sweetAlert";
 import Button from "./Button";
 import { useSEO } from "../hooks/useSEO";
+import { useWorkouts } from "../hooks/useWorkouts";
 
 export const Workouts: React.FC = () => {
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const { workouts, newWorkout, onDelete, getWorkouts } = useWorkouts();
+
   useSEO({
     title: "Mis entrenamientos",
     description: "Aquí puedes ver tus entrenamientos",
   });
-
-  const getWorkouts = useCallback(async () => {
-    try {
-      const idUser = getUserId();
-      const response = await getUserWorkouts(idUser);
-      if (response.ok) {
-        const workoutsData = await response.json();
-        setWorkouts(workoutsData);
-      } else {
-        console.error("Error fetching workouts: ", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error fetching workouts: ", error);
-    }
-  }, []);
-
-  const newWorkout = useCallback(
-    async (workout: NewWorkout) => {
-      try {
-        const response = await createWorkout(workout);
-        if (response.ok) {
-          getWorkouts();
-        } else {
-          console.error("Error creating workout: ", response.statusText);
-        }
-      } catch (error) {
-        console.error("Error creating workout: ", error);
-      }
-    },
-    [getWorkouts]
-  );
-
-  const onDelete = useCallback(
-    async (idWorkout: number) => {
-      try {
-        const response = await deleteWorkout(idWorkout);
-        if (response.ok) {
-          getWorkouts();
-        } else {
-          console.error("Error deleting workout: ", response.statusText);
-        }
-      } catch (error) {
-        console.error("Error deleting workout: ", error);
-      }
-    },
-    [getWorkouts]
-  );
 
   const newWorkoutModel = useCallback((): void => {
     newWorkoutSwal(newWorkout, getUserId);
