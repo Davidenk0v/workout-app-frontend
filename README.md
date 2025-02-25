@@ -141,11 +141,11 @@ export const useTable = () => useContext(TableContext);
 ```
 
 ## 📌 HOC de Login y Register
-
+>[!TIP]
+>Hoc para manejar la lógica de los formularios. Tanto la de register como la de logín, abstrayendo la lógica de los componentes en si.
+>Recibe un componente, un estado inicial y el tipo de formulario que es.
+>Devuelve un componente con la lógica de los formularios.
 ```tsx
-// Hoc para manejar la lógica de los formularios. Tanto la de register como la de logín, abstrayendo la lógica de los componentes en si.
-// Recibe un componente, un estado inicial y el tipo de formulario que es.
-// Devuelve un componente con la lógica de los formularios.
 export const withForm = (
   Component: React.ComponentType<Login | Register>,
   initialState: Login | Register,
@@ -256,12 +256,13 @@ export const useSEO = ({
 ```
 
 ## 📌Usando un Hook para abstraer la lógica de los entrenamientos
+>[!TIP]
+>Hook para obtener los entrenamientos del usuario
+>Abstraigo la lógica de los entrenamientos en este hook
+>Devuelve los entrenamientos, la función para obtenerlos,
+>la función para crear un nuevo entrenamiento y la función para borrar un entrenamiento
 
 ```tsx
-// Hook para obtener los entrenamientos del usuario
-// Abstraigo la lógica de los entrenamientos en este hook
-// Devuelve los entrenamientos, la función para obtenerlos,
-// la función para crear un nuevo entrenamiento y la función para borrar un entrenamiento
 export const useWorkouts = () => {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
 
@@ -357,7 +358,8 @@ dispatch({ type: "REMOVE", payload: data });
 
 ## 📌El useReducer metido dentro de un custom hook para mejor abstracción
 
-[!Important]Se unifica la llamada al disatch con la llamada a los servicios
+>[!TIP]
+>Se unifica la llamada al disatch con la llamada a los servicios
 
 ```tsx
 
