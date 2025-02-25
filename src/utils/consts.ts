@@ -55,3 +55,10 @@ export const REGISTER_INPUTS = [
     type: "password",
   },
 ] as const;
+
+export const ACTIONS_USER = {
+  ADD: "add",
+  REMOVE: "remove",
+  UPDATE: "update",
+  SET: "set",
+} as const;
